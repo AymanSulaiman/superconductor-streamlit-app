@@ -15,7 +15,7 @@ st.title('Superconductor Machine Learning App And Analysis')
 
 st.write('''
 This is an app that predicts the Critical Temperature of a Superconductor 
-using XGBoost.  Shoutout to Kam Ham idieh of UPenn for donating the data to UC Irvine for providing the clean data 
+using TensorFlow and Keras.  Shoutout to Kam Ham idieh of UPenn for donating the data to UC Irvine for providing the clean data 
 so I can make this app. Here is the link to the [dataset]('https://archive.ics.uci.edu/ml/datasets/Superconductivty+Data')
 and the [Data Professor]('https://www.youtube.com/channel/UCV8e2g4IWQqK71bbzGDEI4Q') who's tutorial I followed for the streamlit app.
 
