@@ -6,8 +6,10 @@ import plotly.express as px
 import plotly.graph_objects as go
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
+import matplotlib.pyplot as plt 
 from tensorflow.keras.models import load_model
 from sklearn.metrics import r2_score
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 st.title('Superconductor Machine Learning App And Analysis')
 
@@ -17,11 +19,11 @@ using XGBoost.  Shoutout to Kam Ham idieh of UPenn for donating the data to UC I
 so I can make this app. Here is the link to the [dataset]('https://archive.ics.uci.edu/ml/datasets/Superconductivty+Data')
 and the [Data Professor]('https://www.youtube.com/channel/UCV8e2g4IWQqK71bbzGDEI4Q') who's tutorial I followed for the streamlit app.
 
-All you need to do is select a material that is on the left of your monitor and XGBoost will do the rest.
+All you need to do is select a material that is on the left of your monitor and the Neural Network will do the rest.
 
 **Disclaimers**
 
-This App runs a little bit slow due to the size of the files.
+This App runs a little bit slow due to the size of the Neural Nework and the size of the data files.
 
 This is not 100% accurate. These are just predictions and getting 100% accuracy would mean that XGBoost would have overfitted the data.
 
@@ -32,10 +34,11 @@ Have a look at this [article](http://www.owlnet.rice.edu/~dodds/Files332/HiTc.pd
 
 # Declaring paths for each of the CSV files
 path_merged = os.path.join('data','merged.csv')
+history_path = os.path.join('data','history.csv')
 
 # Declaring the DataFrames with respect to the CSV file
 df_merged = pd.read_csv(path_merged)
-
+df_history = pd.read_csv(history_path)
 
 
 
@@ -147,8 +150,21 @@ mse_test = model.evaluate(X_test, y_test)
 ```
 ''')
 
-st.write('This Gives us an r squared score of', 100*round(score_test,4), '%')
+st.write('This gives an r squared score of', 100*round(score_test,4), '%')
 
+st.write('''
+Below is the number of epochs done and the measurements performed 
+''')
+
+def history_plot():
+    df_history.plot(figsize=(15,7))
+    plt.ylim(0,350)
+    plt.xlabel('Number of Epochs')
+    plt.ylabel('Mertrics')
+    plt.title('Epochs and Metrics for Neural Network')
+
+    return st.pyplot()
+history_plot()
 
 ######################################
 # Showing the data and visualizations#
