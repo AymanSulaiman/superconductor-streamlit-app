@@ -25,7 +25,7 @@ All you need to do is select a material that is on the left of your monitor and 
 
 This App runs a little bit slow due to the size of the Neural Nework and the size of the data files.
 
-This is not 100% accurate. These are just predictions and getting 100% accuracy would mean that XGBoost would have overfitted the data.
+This is not 100% accurate. These are just predictions and getting 100% accuracy would mean that the Neural Network would have overfitted the data.
 
 Have a look at this [article](http://www.owlnet.rice.edu/~dodds/Files332/HiTc.pdf) to see how to obtain the temperature of Supercondutors.
 ''')
@@ -72,7 +72,7 @@ def sidebar_test_materials_list():
     return list_of_materials
 
 
-materia = st.sidebar.selectbox('Select a material',(sidebar_test_materials_list()))
+materia = st.sidebar.selectbox('',(sidebar_test_materials_list()))
 # end of sidebar
 
 # start of modifyable Dataframe
@@ -118,10 +118,15 @@ st.write('''
 
 score_test = r2_score(temp_actual, temp_pred)
 
-st.write('''
+st.write(f'''
+## How the Model was made.
+Below is the process of how the Neural Network was made and how the file was exported.
+I wanted to add in more layers to make the model more accurate and to improve the model overall. 
+I think an accuracy of {100*round(score_test,4)}%, however is perfectly fine.  I made this Neural Network with a CPU rather than a GPU.  I am currently hosting this model on Heroku and they do not provide the luxary of a GPU.
+
 ```
-X = df_merged.drop(['critical_temp', 'material'], axis=1)
-y = df_merged['critical_temp'].values.reshape(-1,1)
+X = df.drop(['critical_temp', 'material'], axis=1)
+y = df['critical_temp'].values.reshape(-1,1)
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, 
                                         test_size=0.2, random_state=42)
@@ -139,10 +144,15 @@ model.compile(loss='mean_squared_error',
             metrics=['mae', 'mse']
              )
 
-history = model.fit(X_train, y_train, epochs=2000,
+
+checkpoint_cb = keras.callbacks.ModelCheckpoint("my_keras_model.h5", save_best_only=True)
+
+
+history = model.fit(X_train, y_train, epochs=3500,
                     validation_data=(X_test, y_test),
                     batch_size=1024,
                     callbacks=[checkpoint_cb])
+
 
 model = keras.models.load_model("my_keras_model.h5") # rollback to best model
 mse_test = model.evaluate(X_test, y_test)
@@ -155,6 +165,7 @@ st.write('This gives an r squared score of', 100*round(score_test,4), '%')
 st.write('''
 Below is the number of epochs done and the measurements performed 
 ''')
+
 
 def history_plot():
     df_history.plot(figsize=(15,7))
