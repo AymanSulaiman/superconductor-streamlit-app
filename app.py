@@ -47,7 +47,7 @@ X = df_merged.drop(['critical_temp'], axis=1)
 y = df_merged['critical_temp'].values.reshape(-1,1)
 
 
-model_path = os.path.join('..','superconductor-analysis-and-prediction','my_keras_model.h5')
+model_path = os.path.join('my_keras_model.h5')
 model = load_model(model_path)
 
 temp_pred = model.predict(df_merged.drop(['material','critical_temp'], axis=1))
@@ -76,7 +76,7 @@ materia = st.sidebar.selectbox('Select a material',(sidebar_test_materials_list(
 # end of sidebar
 
 # start of modifyable Dataframe
-# number_of_elements = X_test_copy_reset_index[X_test_copy_reset_index.material == materia].number_of_elements
+
 actual_temp = temp_actual[df_merged[df_merged.material == materia].index]
 predicted_temp = temp_pred[df_merged[df_merged.material == materia].index]
 
@@ -178,10 +178,17 @@ show_df
 
 st.title(f'Number of rows of the full dataset: {len(df_merged)}')
 
+merged_copy = df_merged.copy()
+merged_copy['pred_temp'] = temp_pred
+
+
+
 def predicted_actual():
     fig = px.scatter(
-        x = np.array([[i] for i in temp_actual]).flatten(),
-        y = np.array([[i] for i in temp_pred]).flatten(),
+        merged_copy,
+        hover_data=['material'],
+        x='critical_temp',
+        y='pred_temp',
         # width=1000,
     )
     
@@ -209,8 +216,6 @@ def mean_atomic_mass_and_critical_temperature():
         y='critical_temp',
         size='critical_temp', 
         color='number_of_elements',
-        width=1000, 
-        # height=800
     )
 
 
@@ -222,7 +227,6 @@ def mean_atomic_mass_and_critical_temperature():
         yaxis=dict(
             title='Critical Temperature (K)'
         ),
-        # margin=dict(l=50, r=50, t=100, b=100),
     )
 
     return st.plotly_chart(fig)
